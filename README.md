@@ -1,3 +1,4 @@
+![BestPractices2Body](https://github.com/edodema/BestPractices2Body/blob/main/teaser.png?newteaser)
 # BestPractices2Body
 
 # Structure
