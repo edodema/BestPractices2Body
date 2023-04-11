@@ -1,11 +1,3 @@
-from scipy.spatial.transform import Rotation as R
-import numpy as np
-import torch
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print("Using device: %s" % device)
-
-
 """
 Software ExPI
 Copyright Inria
@@ -13,16 +5,20 @@ Year 2021
 Contact : wen.guo@inria.fr
 GPL license.
 """
-# vis_2p.py
-# visualize input + pred/gt + error bar for a couple of actors
-
-import numpy as np
+from typing import Optional
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.animation import FFMpegWriter
-from mpl_toolkits.mplot3d import Axes3D
 from tqdm import tqdm
-plt.rcParams['animation.ffmpeg_path'] = '/usr/bin/ffmpeg'
+from scipy.spatial.transform import Rotation as R
+import numpy as np
+
+import torch
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print("Using device: %s" % device)
+plt.rcParams["animation.ffmpeg_path"] = "/usr/bin/ffmpeg"
+
 
 class ExPI3D(object):
     def __init__(self, fig):
@@ -45,16 +41,27 @@ class ExPI3D(object):
 
     def update(
         self,
-        f,
-        channels,
-        channels2=None,
-        color_gt_l="yellowgreen",
-        color_gt_f="orchid",
-        color_pred_l="darkolivegreen",
-        color_pred_f="darkorchid",
-        plot_pred=True,
+        f: int,
+        channels: torch.Tensor,
+        channels2: Optional[torch.Tensor] = None,
+        color_gt_l: str = "yellowgreen",
+        color_gt_f: str = "orchid",
+        color_pred_l: str = "darkolivegreen",
+        color_pred_f: str = "darkorchid",
+        plot_pred: bool = True,
     ):
-        # ! Added by me
+        """Update the 3D skeleton.
+
+        Args:
+            f (int): Frame index.
+            channels (torch.Tensor): Skeleton for gt.
+            channels2 (Optional[torch.Tensor], optional): Skeleton for prediction. Defaults to None.
+            color_gt_l (str, optional): Ground truth leader's color. Defaults to "yellowgreen".
+            color_gt_f (str, optional): Ground truth follower's color. Defaults to "orchid".
+            color_pred_l (str, optional): Prediction leader's color. Defaults to "darkolivegreen".
+            color_pred_f (str, optional): Prediction follower's color. Defaults to "darkorchid".
+            plot_pred (bool, optional): Plot prediction. Defaults to True.
+        """
         assert (
             channels.size(dim=0) == 108
         ), "channels should have 108 for 2p, it has %d instead" % channels.size(dim=0)
@@ -82,9 +89,7 @@ class ExPI3D(object):
                 )
 
             # channels2: 2p for pred
-            # if channels2 is not None:
             if plot_pred:
-                # ! Added by me.
                 vals2_ = np.reshape(channels2.cpu().detach().numpy(), (36, -1))
                 vals2_l = vals2_[:18, :]
                 vals2_f = vals2_[18:, :]
@@ -105,28 +110,36 @@ class ExPI3D(object):
 
         # time string
         if f >= 10:
-            time_string = "             Pred/GT "
+            time_string = "             Pred/GT"
         else:  # input
             time_string = "             Input"
         self.ax.text2D(-0.04, -0.07, time_string, fontsize=15)
 
 
 def vis_pi_compare(
-    p3d_gt,
-    p3d_pred,
-    save_path,
-    err_list=None,
-    color_gt_l="yellowgreen",
-    color_gt_f="orchid",
-    color_pred_l="darkolivegreen",
-    color_pred_f="darkorchid",
-    plot_pred=True,
+    p3d_gt: torch.Tensor,
+    p3d_pred: torch.Tensor,
+    save_path: str,
+    err_list: Optional[np.ndarray] = None,
+    color_gt_l: str = "yellowgreen",
+    color_gt_f: str = "orchid",
+    color_pred_l: str = "darkolivegreen",
+    color_pred_f: str = "darkorchid",
+    plot_pred: bool = True,
 ):
-    # p3d_gt: numpy array with len (50+output_n,108)
-    # p3d_pred: numpy array with len (output_n,108)
-    # save_path: path and name for saving the mp4 video, eg: ./outputs/test.mp4
-    # err_list: numpy array with len output_n
+    """Visualize the 3D pose prediction results.
 
+    Args:
+        p3d_gt (torch.Tensor): Ground truth 3D pose (50+output_n,108).
+        p3d_pred (torch.Tensor): Predicted 3D pose (output_n,108).
+        save_path (str): Path to save the visualization video e.g., ./outputs/test.mp4.
+        err_list (np.ndarray, optional): List of errors (output_n). Defaults to None. # ?
+        color_gt_l (str, optional): Ground truth leader's color. Defaults to "yellowgreen".
+        color_gt_f (str, optional): Ground truth follower's color. Defaults to "orchid".
+        color_pred_l (str, optional): Prediction leader's color. Defaults to "darkolivegreen".
+        color_pred_f (str, optional): Prediction follower's color. Defaults to "darkorchid".
+        plot_pred (bool, optional): Plot prediction. Defaults to True.
+    """
     num_frames_gt = len(p3d_gt)  # 75
     num_frames_pred = len(p3d_pred)  # 25
     p3d_gt = p3d_gt.reshape((num_frames_gt, -1))
@@ -139,7 +152,7 @@ def vis_pi_compare(
     with writer.saving(fig, save_path, 100):
         f = 0
         for i in tqdm(range(num_frames_gt - num_frames_pred)):  # vis input
-            ## uncomment to vis input as well
+            # * Uncomment to visualize input as well
             # ob.update(f, p3d_gt[i])
             # writer.grab_frame()
             # plt.pause(0.01)
@@ -160,7 +173,7 @@ def vis_pi_compare(
                 plot_pred=plot_pred,
             )
 
-            ## draw an error bar for err_list
+            # draw an error bar for err_list
             if err_list is not None:  # draw an error bar for err_list
                 err = err_list[i - num_frames_gt + num_frames_pred]
                 ob.ax.text2D(
@@ -182,7 +195,7 @@ def vis_pi_compare(
                 fig.add_artist(
                     patches.Rectangle((0.35, 0.11), err_len, 0.025, fill=True, lw=0.5)
                 )
-            ## uncomment to save imgs for each frame
+            # * Uncomment to save imgs for each frame
             # fig_save_path = save_path.split(".mp4")[0]
             # plt.savefig(fig_save_path + "_" + str(i) + ".jpg")
             # plt.savefig(fig_save_path + "_" + str(i) + ".svg", dpi=350)

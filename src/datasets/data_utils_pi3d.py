@@ -5,25 +5,19 @@ Year 2021
 Contact : wen.guo@inria.fr
 GPL license.
 """
-# data_utils.py
-# func utils for data
-
 import numpy as np
 import torch
 
-# from IPython import embed
-
-###########################################
-## func for reading data
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-def readCSVasFloat(filename, with_key=True):
-    """
-    Borrowed from SRNN code. Reads a csv and returns a float matrix.
+def readCSVasFloat(filename: str, with_key: bool = True) -> np.ndarray:
+    """Borrowed from SRNN code. Reads a csv and returns a float matrix.
     https://github.com/asheshjain399/NeuralModels/blob/master/neuralmodels/utils.py#L34
+
     Args
       filename: string. Path to the csv file
+
     Returns
       returnArray: the read data in a float32 matrix
     """
@@ -40,20 +34,25 @@ def readCSVasFloat(filename, with_key=True):
     return returnArray
 
 
-###########################################
-## func utils for norm/unnorm
+def normExPI_xoz(
+    img: np.ndarray, P0: np.ndarray, P1: np.ndarray, P2: np.ndarray
+) -> np.ndarray:
+    """Normalizes the ExPI data to the xoz plane.
 
+    Args:
+        img (np.ndarray): Input ExPI data.
+        P0 (np.ndarray): Origin.
+        P1 (np.ndarray): P0-P1 is the x axis.
+        P2 (np.ndarray): P0-P1-P2 is the plane xoz.
 
-def normExPI_xoz(img, P0, P1, P2):
-    # P0: orig
-    # P0-P1: axis x
-    # P0-P1-P2: olane xoz
-
+    Returns:
+        np.ndarray: Normalized ExPI data.
+    """
     X0 = P0
     X1 = (P1 - P0) / np.linalg.norm((P1 - P0)) + P0  # x
     X2 = (P2 - P0) / np.linalg.norm((P2 - P0)) + P0
     X3 = np.cross(X2 - P0, X1 - P0) + P0  # y
-    ### x2 determine z -> x2 determine plane xoz
+    # x2 determine z -> x2 determine plane xoz
     X2 = np.cross(X1 - P0, X3 - P0) + P0  # z
 
     X = np.concatenate(
@@ -70,7 +69,15 @@ def normExPI_xoz(img, P0, P1, P2):
     return img_norm
 
 
-def normExPI_2p_by_frame(seq):
+def normExPI_2p_by_frame(seq: np.ndarray) -> np.ndarray:
+    """Normalizes the ExPI data to the xoz plane, for each frame.
+
+    Args:
+        seq (np.ndarray): Input ExPI data.
+
+    Returns:
+        np.ndarray: Normalized ExPI data.
+    """
     nb, dim = seq.shape  # nb_frames, dim=108
     seq_norm = seq.copy()
     for i in range(nb):
@@ -83,7 +90,15 @@ def normExPI_2p_by_frame(seq):
     return seq_norm
 
 
-def unnorm_abs2Indep(seq):
+def unnorm_abs2Indep(seq: torch.Tensor) -> torch.Tensor:
+    """Unnormalizes the ExPI data to the xoz plane.
+
+    Args:
+        seq (torch.Tensor): Normalized ExPI data.
+
+    Returns:
+        torch.Tensor: Unnormalized ExPI data.
+    """
     # in:  torch.size(bz, nb_frames, 36, 3)
     # out: torch.size(bz, nb_frames, 36, 3)
     seq = seq.detach().cpu().numpy()
@@ -110,11 +125,16 @@ def unnorm_abs2Indep(seq):
     return seq
 
 
-###########################################
-## func utils for finding test samples
+def find_indices_64(num_frames: int, seq_len: int) -> np.ndarray:
+    """Finds the indices for the 64 frames.
 
+    Args:
+        num_frames (int): Number of frames.
+        seq_len (int): Sequence length.
 
-def find_indices_64(num_frames, seq_len):
+    Returns:
+        np.ndarray: Indices for the 64 frames.
+    """
     # not random choose. as the sequence is short and we want the test set to represent the seq better
     seed = 1234567890
     np.random.seed(seed)

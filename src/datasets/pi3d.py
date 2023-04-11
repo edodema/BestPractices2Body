@@ -7,32 +7,33 @@ MIT license.
 """
 # pi3d.py
 
+import numpy as np
+
 import torch
 from torch.utils.data import Dataset
-import numpy as np
-from utils import data_utils_pi3d
-from utils import vis_2p
 
-# from IPython import embed
+from src.datasets import data_utils_pi3d
+from src.utils.config import config
+
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-path = "./dataset/"
+
 
 class Datasets(Dataset):
     def __init__(self, opt, actions=None, is_train=True):
-
-        self.path_to_data = path+"pi"
+        self.path_to_data = opt.data_dir + opt.pi3d_anno_dir
         self.is_train = is_train
         if is_train:  # train
-            self.in_n = opt.input_n
-            self.out_n = opt.output_n
+            self.in_n = opt.motion.pi3d_input_length
+            self.out_n = opt.motion.pi3d_target_length_train
             self.split = 0
         else:  # test
-            self.in_n = opt.input_n
-            self.out_n = opt.output_n
+            self.in_n = opt.motion.pi3d_input_length
+            self.out_n = opt.motion.pi3d_target_length_eval
             self.split = 1
         self.skip_rate = 1
         self.p3d = {}
-        self.data_idx = []
+        sampled_seq = []
 
         if opt.protocol == "pro3":  # unseen action split
             if is_train:  # train on acro2
@@ -70,6 +71,7 @@ class Datasets(Dataset):
                 ]
 
             else:  # test on acro1
+                # ! In the paper they have a different order.
                 acts = [
                     "2/crunch-toast",
                     "2/frog-kick",
@@ -150,9 +152,6 @@ class Datasets(Dataset):
                     [1, 2, 3, 4, 5],
                     [3, 4, 5, 6, 7],
                 ]
-                if actions[0] in acts:
-                    subfix = subfix[acts.index(actions[0])]
-                    acts = actions[0]
 
                 if (
                     opt.test_split is not None
@@ -171,7 +170,6 @@ class Datasets(Dataset):
                         subfix[int(opt.protocol)]
                     ]
 
-        key = 0
         for action_idx in np.arange(len(acts)):
             subj_action = acts[action_idx]
             subj, action = subj_action.split("/")
@@ -200,20 +198,30 @@ class Datasets(Dataset):
                     valid_frames = data_utils_pi3d.find_indices_64(num_frames, seq_len)
 
                 p3d = the_sequence
-                self.p3d[key] = p3d.view(num_frames, -1).cpu().data.numpy()
-                tmp_data_idx_1 = [key] * len(valid_frames)
-                tmp_data_idx_2 = list(valid_frames)
-                self.data_idx.extend(zip(tmp_data_idx_1, tmp_data_idx_2))
-                key += 1
+                the_sequence = p3d.view(num_frames, -1).cpu().data.numpy()
+                fs_sel = valid_frames
+                for i in np.arange(seq_len - 1):
+                    fs_sel = np.vstack((fs_sel, valid_frames + i + 1))
+                fs_sel = fs_sel.transpose()
+                seq_sel = the_sequence[fs_sel, :]
+
+                if len(sampled_seq) == 0:
+                    sampled_seq = seq_sel
+                    complete_seq = the_sequence
+                else:
+                    sampled_seq = np.concatenate((sampled_seq, seq_sel), axis=0)
+                    complete_seq = np.append(complete_seq, the_sequence, axis=0)
 
         self.dimension_use = np.arange(18 * 2 * 3)
         self.in_features = len(self.dimension_use)
+        self.gts = sampled_seq
 
     def __len__(self):
-        return np.shape(self.data_idx)[0]
+        return self.gts.shape[0]
 
     def __getitem__(self, item):
-        key, start_frame = self.data_idx[item]
-        fs = np.arange(start_frame, start_frame + self.in_n + self.out_n)
-        data = self.p3d[key][fs][:, self.dimension_use]
-        return data
+        gts = {}
+        gts = self.gts[item]
+        pi3d_motion_input = gts[: self.in_n] / 1000  # meter
+        pi3d_motion_target = gts[self.in_n :] / 1000  # meter
+        return pi3d_motion_input, pi3d_motion_target

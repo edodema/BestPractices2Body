@@ -1,12 +1,20 @@
-#!/usr/bin/env python
-# encoding: utf-8
+from typing import Tuple
 import numpy as np
 import torch
 
 # from IPython import embed
 
 
-def rigid_transform_3D(A, B):
+def rigid_transform_3D(A: np.ndarray, B: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    """Calculate the least-squares best-fit transform that maps corresponding points A to B in m spatial dimensions. # ?
+
+    Args:
+        A (np.ndarray): Source points.
+        B (np.ndarray): Target points.
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray]: Rotation matrix and translation vector.
+    """
     centroid_A = np.mean(A, axis=0)
     centroid_B = np.mean(B, axis=0)
     H = np.dot(np.transpose(A - centroid_A), B - centroid_B)
@@ -19,15 +27,31 @@ def rigid_transform_3D(A, B):
     return R, t
 
 
-def rigid_align(A, B):
+def rigid_align(A: np.ndarray, B: np.ndarray) -> np.ndarray:
+    """Align A to B.
+
+    Args:
+        A (torch.Tensor): Source points (ba, nb_frames, 36, 3).
+        B (torch.Tensor): Target points (ba, nb_frames, 36, 3).
+
+    Returns:
+        torch.Tensor: Aligned points.
+    """
     R, t = rigid_transform_3D(A, B)
     A2 = np.transpose(np.dot(R, np.transpose(A))) + t
     return A2
 
 
-def rigid_align_torch(A, B):
-    # align A to B
-    # A,B:torch.Size([ba, nb_frames, 36, 3])
+def rigid_align_torch(A: torch.Tensor, B: torch.Tensor) -> torch.Tensor:
+    """Align A to B.
+
+    Args:
+        A (torch.Tensor): Source points (ba, nb_frames, 36, 3).
+        B (torch.Tensor): Target points (ba, nb_frames, 36, 3).
+
+    Returns:
+        torch.Tensor: Aligned points.
+    """
     A = A.detach().cpu().numpy()
     B = B.detach().cpu().numpy()
     bz, nb_f, nb_kpts, _ = A.shape

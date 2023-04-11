@@ -1,9 +1,9 @@
-# encoding: utf-8
 import os
 import sys
 import time
 import argparse
 from collections import OrderedDict, defaultdict
+
 
 def extant_file(x):
     """
@@ -16,17 +16,29 @@ def extant_file(x):
     return x
 
 
-def link_file(src, target):
+def link_file(src: str, target: str):
+    """Link file.
+
+    Args:
+        src (str): Source file path.
+        target (str): Target file path.
+    """
     if os.path.isdir(target) or os.path.isfile(target):
         os.remove(target)
-    os.system('ln -s {} {}'.format(src, target))
+    os.system("ln -s {} {}".format(src, target))
 
 
-def ensure_dir(path):
+def ensure_dir(path: str):
+    """Ensure directory exists.
+
+    Args:
+        path (str): Directory path.
+    """
     if not os.path.isdir(path):
         os.makedirs(path)
 
 
 def _dbg_interactive(var, value):
     from IPython import embed
+
     embed()

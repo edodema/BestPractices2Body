@@ -79,7 +79,9 @@ class Parser:
         self.parser.add_argument(
             "--iter", type=str, default="40000", help="=iteration number"
         )
-        self.parser.add_argument("--visualize", action="store_true", help="visualize predictions")
+        self.parser.add_argument(
+            "--visualize", action="store_true", help="visualize predictions"
+        )
 
         # Wandb
         self.parser.add_argument(
@@ -104,7 +106,7 @@ class Parser:
             "--wandb_group", type=str, default=None, help="=wandb group name"
         )
         self.parser.add_argument("--wandb_tags", nargs="+", help="=wandb tags")
-   
+
         # Training options
         self.parser.add_argument(
             "--run_name", type=str, default="temp", help="=run name"

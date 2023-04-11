@@ -1,9 +1,17 @@
-import numpy as np
+from typing import Tuple
 import torch
+import numpy as np
 
 
+def get_dct_matrix(N: int) -> Tuple[np.ndarray, np.ndarray]:
+    """Get DCT matrix.
 
-def get_dct_matrix(N):
+    Args:
+        N (int): DCT matrix size.
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray]: DCT matrix and inverse DCT matrix.
+    """
     dct_m = np.eye(N)
     for k in np.arange(N):
         for i in np.arange(N):
@@ -14,7 +22,19 @@ def get_dct_matrix(N):
     idct_m = np.linalg.inv(dct_m)
     return dct_m, idct_m
 
-def update_lr_multistep(nb_iter, total_iter, max_lr, min_lr, optimizer):
+
+def update_lr_multistep(
+    nb_iter: int, optimizer: torch.optim.Optimizer
+) -> Tuple[torch.optim.Optimizer, float]:
+    """Update learning rate.
+
+    Args:
+        nb_iter (int): Iteration number.
+        optimizer (torch.optim.Optimizer): Optimizer.
+
+    Returns:
+        Tuple[torch.optim.Optimizer, float]: Optimizer and current learning rate.
+    """
     if nb_iter > 30000:
         current_lr = 1e-5
     else:

@@ -1,18 +1,22 @@
+from typing import List, Tuple
 import os
-import numpy as np
-from src.utils.config import config
+from easydict import EasyDict
 
-from src.datasets import pi3d_hier as datasets
+import numpy as np
+
+import torch
+from torch import nn
+from torch.utils.data import DataLoader
+
+from src.utils.config import config
+from datasets import pi3d as datasets
 from src.model import Model
 from src.utils.rigid_align import rigid_align_torch
 from src.utils.visualize import vis_pi_compare
 from src.utils.parser import Parser
 
-import torch
-from torch.utils.data import DataLoader
 
-
-def get_dct_matrix(N):
+def get_dct_matrix(N: int) -> Tuple[np.ndarray, np.ndarray]:
     dct_m = np.eye(N)
     for k in np.arange(N):
         for i in np.arange(N):
@@ -24,7 +28,33 @@ def get_dct_matrix(N):
     return dct_m, idct_m
 
 
-def regress_pred(model, pbar, num_samples, m_p3d_pi3d, a_p3d_pi3d, device, dct_m, idct_m, visualize=False):
+def regress_pred(
+    model: nn.Module,
+    pbar: DataLoader,
+    num_samples: int,
+    m_p3d_pi3d: np.ndarray,
+    a_p3d_pi3d: np.ndarray,
+    device: torch.device,
+    dct_m: torch.Tensor,
+    idct_m: torch.Tensor,
+    visualize: bool = False,
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Regress prediction.
+
+    Args:
+        model (nn.Module): Model.
+        pbar (DataLoader): Dataloader.
+        num_samples (int): Number of samples.
+        m_p3d_pi3d (np.ndarray): MPJPE accumulator.
+        a_p3d_pi3d (np.ndarray): AME accumulator.
+        device (torch.device): CUDA device.
+        dct_m (torch.Tensor): DCT matrix.
+        idct_m (torch.Tensor): IDCT matrix.
+        visualize (bool, optional): Visualization flag. Defaults to False.
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray]: MPJPE and AME.
+    """
     for i, (motion_input, motion_target) in enumerate(pbar):
         motion_input = motion_input.to(device)
         b, n, _ = motion_input.shape
@@ -38,7 +68,7 @@ def regress_pred(model, pbar, num_samples, m_p3d_pi3d, a_p3d_pi3d, device, dct_m
         outputs = []
         step = config.motion.pi3d_target_length_train
 
-        # * Step iterations.
+        # Step iterations.
 
         if step == config.motion.pi3d_target_length_eval:
             num_step = 1
@@ -82,7 +112,8 @@ def regress_pred(model, pbar, num_samples, m_p3d_pi3d, a_p3d_pi3d, device, dct_m
         motion_pred *= 1000
         motion_gt = (motion_gt.reshape(b, 25, 36, 3) * 1000).to(device)
         motion_pred = motion_pred.to(device)
-        # * MPJPE a.k.a. JME
+
+        # MPJPE a.k.a. JME
         mpjpe_p3d_pi3d = torch.sum(
             torch.mean(
                 torch.norm(motion_pred - motion_gt, dim=3),
@@ -92,7 +123,7 @@ def regress_pred(model, pbar, num_samples, m_p3d_pi3d, a_p3d_pi3d, device, dct_m
         )
         m_p3d_pi3d += mpjpe_p3d_pi3d.cpu().numpy()
 
-        # ! Uncomment it during test, at train time gives error since the weights being learned may be negative. It will be solved in the final version with a test flag.
+        # ! at train could give errors due to negative weights
         # * AME
         pred_ali_l = rigid_align_torch(
             motion_pred[:, :, :18, :], motion_gt[:, :, :18, :]
@@ -110,12 +141,12 @@ def regress_pred(model, pbar, num_samples, m_p3d_pi3d, a_p3d_pi3d, device, dct_m
             dim=0,
         )
         a_p3d_pi3d += ame_p3d_pi3d.cpu().numpy()
-        
+
         # * Visualization.
         path = "./viz"
         if not os.path.exists(path):
             os.makedirs(path)
-            
+
         if visualize:
             p3d_gt = torch.flatten(motion_gt, start_dim=-2)
             p3d_pred = torch.flatten(motion_pred, start_dim=-2)
@@ -130,13 +161,36 @@ def regress_pred(model, pbar, num_samples, m_p3d_pi3d, a_p3d_pi3d, device, dct_m
     return m_p3d_pi3d, a_p3d_pi3d
 
 
-def test(config, model, dataloader, device, dct_m, idct_m, visualize=False):
+def test(
+    config: EasyDict,
+    model: nn.Module,
+    dataloader: DataLoader,
+    device: torch.device,
+    dct_m: torch.Tensor,
+    idct_m: torch.Tensor,
+    visualize: bool = False,
+) -> Tuple[List, List]:
+    """Test function.
+
+    Args:
+        config (EasyDict): Configuration object.
+        model (nn.Module): Model.
+        dataloader (DataLoader): DataLoader.
+        device (torch.device): CPU or GPU.
+        dct_m (torch.Tensor): DCT matrix.
+        idct_m (torch.Tensor): IDCT matrix.
+        visualize (bool, optional): Visualization flag. Defaults to False.
+
+    Returns:
+        Tuple[List, List]: MPJPE and AME.
+    """
+    # Splits
     # * Common
     results_keys = ["#4", "#9", "#14", "#24"]
     # * Unseen
     # results_keys = ["#9", "#14", "#19"]
-    
-    # * MPJPE/JME and AME
+
+    # MPJPE/JME and AME
     m_p3d_pi3d = np.zeros([config.motion.pi3d_target_length_eval])
     a_p3d_pi3d = np.zeros([config.motion.pi3d_target_length_eval])
 
@@ -145,7 +199,15 @@ def test(config, model, dataloader, device, dct_m, idct_m, visualize=False):
 
     pbar = dataloader
     m_p3d_pi3d, a_p3d_pi3d = regress_pred(
-        model, pbar, num_samples, m_p3d_pi3d, a_p3d_pi3d, device, dct_m, idct_m, visualize
+        model,
+        pbar,
+        num_samples,
+        m_p3d_pi3d,
+        a_p3d_pi3d,
+        device,
+        dct_m,
+        idct_m,
+        visualize,
     )
 
     mpjpe = {}
@@ -170,11 +232,12 @@ if __name__ == "__main__":
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("Using device: %s" % device)
-    
+
     dct_m, idct_m = get_dct_matrix(config.motion.pi3d_input_length_dct)
     dct_m = torch.tensor(dct_m).float().to(device).unsqueeze(0)
     idct_m = torch.tensor(idct_m).float().to(device).unsqueeze(0)
 
+    # Model
     model = Model(
         input_channels=3,
         input_time_frame=10,
@@ -183,8 +246,6 @@ if __name__ == "__main__":
         joints_to_consider=36,
         n_actors=2,
         n_txcnn_layers=3,
-        txc_kernel_size=[3, 3],
-        txc_dropout=0,
     )
 
     print(
@@ -201,6 +262,7 @@ if __name__ == "__main__":
     model.eval()
     model.to(device)
 
+    # Dataset
     actions = [
         "1/a-frame",
         "1/around-the-back",
@@ -224,7 +286,10 @@ if __name__ == "__main__":
         pin_memory=True,
     )
 
-    mpjpe, ame = test(config, model, dataloader, device, dct_m, idct_m, visualize=args.visualize)
-    
-    print("Average MPJPE on all coomon actions: ", mpjpe)
-    print("Average AME on all coomon actions: ", ame)
+    # Inference
+    mpjpe, ame = test(
+        config, model, dataloader, device, dct_m, idct_m, visualize=args.visualize
+    )
+
+    print("Average MPJPE on all common actions: ", mpjpe)
+    print("Average AME on all common actions: ", ame)

@@ -2,16 +2,17 @@
 Code based on https://github.com/FraLuca/STSGCN/blob/main/model.py
 """
 
-from typing import *
+from typing import List
+import math
+
 import torch
 import torch.nn as nn
-import math
-import pdb
-import numpy as np
 
 
 class GCN(nn.Module):
-    def __init__(self, time_dim: int, joints_dim: int, person_dim: int = 2, index: int = 0):
+    def __init__(
+        self, time_dim: int, joints_dim: int, person_dim: int = 2, index: int = 0
+    ):
         """Basic module to apply graph convolution.
         https://github.com/yysijie/st-gcn/blob/master/net/utils/tgcn.py
         Args:
@@ -28,26 +29,24 @@ class GCN(nn.Module):
         # PRelu's gain
         a = 0.25
         coeffiecient = self.compute_coefficient(a)
-        # ! Space matrix.
-        # Create list of parameters A
+        # Space matrix.
         self.A = nn.Parameter(torch.FloatTensor(time_dim, joints_dim, joints_dim))
 
-        # * In the first layer we have no activation function.
+        # In the first layer we have no activation function.
         if index == 0:
-            stdv_s = math.sqrt(1/(joints_dim))
-            stdv_t = math.sqrt(1/(time_dim))
+            stdv_s = math.sqrt(1 / (joints_dim))
+            stdv_t = math.sqrt(1 / (time_dim))
 
         else:
-            stdv_s = math.sqrt(2/(joints_dim * coeffiecient))
-            stdv_t = math.sqrt(2/(time_dim * coeffiecient))
+            stdv_s = math.sqrt(2 / (joints_dim * coeffiecient))
+            stdv_t = math.sqrt(2 / (time_dim * coeffiecient))
         self.A.data.uniform_(-stdv_s, stdv_s)
 
-        # ! Temporal matrix.
+        # Temporal matrix.
         self.T = nn.Parameter(torch.FloatTensor(joints_dim, time_dim, time_dim))
 
-        # ! We use the same of A. 
+        # We use the same of A.
         self.T.data.uniform_(-stdv_t, stdv_t)
-
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward step.
@@ -65,7 +64,7 @@ class GCN(nn.Module):
         return x.contiguous()
 
     def compute_coefficient(self, x: torch.Tensor) -> torch.Tensor:
-        coeffiecient = 1+x**2
+        coeffiecient = 1 + x**2
 
         return coeffiecient
 
@@ -105,7 +104,9 @@ class STGCNN(nn.Module):
         padding = ((self.kernel_size[0] - 1) // 2, (self.kernel_size[1] - 1) // 2)
 
         # Convolution layer.
-        self.gcn = GCN(time_dim=time_dim, joints_dim=joints_dim, person_dim=person_dim, index=index)
+        self.gcn = GCN(
+            time_dim=time_dim, joints_dim=joints_dim, person_dim=person_dim, index=index
+        )
 
         self.tcn = nn.Sequential(
             nn.Conv2d(
@@ -195,7 +196,6 @@ class CNN(nn.Module):
         return self.net(x)
 
 
-# # ! CHAMPION MODEL: Classic multiple A v2
 class Model(nn.Module):
     def __init__(
         self,
@@ -206,8 +206,6 @@ class Model(nn.Module):
         joints_to_consider: int,
         n_actors: int,
         n_txcnn_layers: int,
-        txc_kernel_size: List[int],
-        txc_dropout: int,
     ):
         """Spatio-temporal social graph convolutional network.
 
@@ -219,8 +217,6 @@ class Model(nn.Module):
             joints_to_consider (int): Number of pose keypoints in the whole scene.
             n_actors (int): Number of actors in the scene.
             n_txcnn_layers (int): Number of layers in the temporal extractor CNN.
-            txc_kernel_size (List[int]): Size of the temporal extractor CNN's kernels, we have one size for all of them.
-            txc_dropout (0): Dropout of the temporal extractor CNN.
         """
         super(Model, self).__init__()
 
@@ -261,8 +257,6 @@ class Model(nn.Module):
         nn.init.kaiming_uniform_(self.fc_out.weight, mode="fan_out")
         nn.init.constant_(self.fc_out.bias, 0)
 
-        
-
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass.
 
@@ -283,7 +277,4 @@ class Model(nn.Module):
         # Reshape for compatibility.
         x = x.reshape(b, t, -1)
 
-        
-
         return x
-

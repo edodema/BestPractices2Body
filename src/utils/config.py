@@ -17,7 +17,7 @@ config = C
 cfg = C
 
 
-"""please config ROOT_dir and user when u first using"""
+# please config ROOT_dir and user when u first using
 C.abs_dir = os.getcwd()
 # C.abs_dir = osp.dirname(osp.realpath(__file__))
 C.this_dir = C.abs_dir.split(osp.sep)[-1]
@@ -47,11 +47,7 @@ def add_path(path):
 
 add_path(osp.join(C.root_dir, "lib"))
 
-"""Data Dir and Weight Dir"""
-# TODO
-
-"""Dataset Config"""
-# C.pi3d_anno_dir = "unet/exps/baseline_expi/data/pi"
+# Dataset Config
 C.pi3d_anno_dir = "pi"
 
 
@@ -59,7 +55,7 @@ C.motion = edict()
 
 # Input and output time frame.
 C.motion.pi3d_input_length = 10  # 10
-# ? DCT size, is it always the same as input?
+# DCT size.
 C.motion.pi3d_input_length_dct = 10  # 10
 # Kernel size at test time.
 C.motion.pi3d_target_length_train = 10  # 10
@@ -77,17 +73,17 @@ C.deriv_input = True
 C.deriv_output = True
 C.use_relative_loss = False
 C.use_curriculum_loss = False
-"""Models"""
+# Models
 C.unet_inpalightpa = True
 
-""" Model Config"""
+#  Model Config
 ## Network
 C.pre_dct = False
 C.post_dct = False
 ## Motion Network mlp
 dim_ = 108
 
-"""Train Config"""
+# Train Config
 C.batch_size = 2
 C.batch_size_test = 4
 C.num_workers = 2  # 8
@@ -99,12 +95,12 @@ C.cos_lr_total_iters = 40000
 C.weight_decay = 1e-4
 C.model_pth = None
 
-"""Eval Config"""
+# Eval Config
 C.shift_step = 1
 
-"""Display Config"""
+# Display Config
 C.print_every = 100
-C.save_every = 5000  # 5000
+C.save_every = 5000
 
 
 if __name__ == "__main__":
