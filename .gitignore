@@ -16,7 +16,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-# lib/
+lib/
 lib64/
 parts/
 sdist/
@@ -584,5 +584,6 @@ FodyWeavers.xsd
 # Additional files built by Visual Studio
 
 # Misc 
-!.gitkeep
 dataset/pi/
+pi.tar.xz
+viz/

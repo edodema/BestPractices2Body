@@ -1,21 +1,54 @@
-![BestPractices2Body](https://github.com/edodema/BestPractices2Body/blob/main/teaser.png?newteaser)
-# BestPractices2Body
+# Best practices for 2-Body Pose Forecasting
 
-# Structure
+<p align="center">
+    <a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/-PyTorch-red?logo=pytorch&labelColor=gray"></a>
+    <a href="https://wandb.ai/site"><img alt="Logging: wandb" src="https://img.shields.io/badge/logging-wandb-yellow"></a>
+    <a href="https://black.readthedocs.io/en/stable/"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+</p>
 
+The official PyTorch implementation of the **5th IEEE/CVF CVPR Precognition Workshop** paper [**Best Practices for 2-Body Pose Forecasting**](todo).
 
-## Content:
-- lib - contains the library code
-    - datasets - contains the preprocessing scripts for the dataset
-    - utils - contains the utility functions
-- snapshots - contains the checkpoint of the model at the end of training
-- config.py - contains the configuration of the model
-- model.py - contains the model definition
-- requirements.yaml - contains the required packages
-- rigid_align.py - contains the code for rigid alignment
-- test.py - contains the code for testing
-   
+Visit our [**webpage**](https://www.pinlab.org/bestpractices2body) for more details.
 
+![teaser](assets/teaser.png)
+
+## Content
+```
+.
+├── assets
+│   ├── poses-viz.png
+│   └── teaser.png
+├── dataset
+│   └── pi
+│       └──
+├── env.yaml
+├── log
+│   └──
+├── README.md
+├── snapshot
+│   └── model-iter-40000.pth
+├── src
+│   ├── datasets
+│   │   ├── data_utils_pi3d.py
+│   │   ├── pi3d_hier.py
+│   │   ├── pi3d.py
+│   │   └── vis_2p.py
+│   ├── model.py
+│   ├── test.py
+│   ├── train.py
+│   └── utils
+│       ├── angle_to_joint.py
+│       ├── config.py
+│       ├── logger.py
+│       ├── misc.py
+│       ├── parser.py
+│       ├── pyt_utils.py
+│       ├── rigid_align.py
+│       ├── util.py
+│       └── visualize.py
+└── viz
+    └──
+```
 ## Setup
 ### Environment
 ```
@@ -26,16 +59,23 @@ conda activate multi_body
 ### Dataset
 Request ExPI dataset [here](https://team.inria.fr/robotlearn/multi-person-extreme-motion-prediction/) and place the `pi` folder under `datasets/`.
 
-## Demo 
-Once you have the environment activated, you can run the code with the following command
+## Training
+```
+python train.py
+```
 
-```python test.py```
+## Test
+```
+python test.py
+```
 
-It will:
-- Define the model specified in the paper
-- load the weights of a pre-trained model
-
-- output the average MPJPE and AME, for all actions,  only for the *common split* of the ExPI dataset. 
-
-
+### Visualization
+```
+python test.py --visualize
+```
 ## Results
+![results](assets/poses-viz.png)
+
+## TODO 
+- Remove clutter.
+- Add typing.
