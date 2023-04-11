@@ -30,6 +30,20 @@
             },
             "args": [
                 "--data=/media/hdd/datasets_common/",
+            ]
+        },
+        {
+            "name": "test_viz",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/test.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "args": [
+                "--data=/media/hdd/datasets_common/",
                 "--visualize",
             ]
         },
