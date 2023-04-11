@@ -20,10 +20,8 @@ Visit our [**webpage**](https://www.pinlab.org/bestpractices2body) for more deta
 │   └── teaser.png
 ├── dataset
 │   └── pi
-│       └──
 ├── env.yaml
 ├── log
-│   └──
 ├── README.md
 ├── snapshot
 │   └── model-iter-40000.pth
@@ -47,13 +45,12 @@ Visit our [**webpage**](https://www.pinlab.org/bestpractices2body) for more deta
 │       ├── util.py
 │       └── visualize.py
 └── viz
-    └──
 ```
 ## Setup
 ### Environment
 ```
 conda env create -f env.yaml
-conda activate multi_body
+conda activate bp42b
 ```
 
 ### Dataset
@@ -74,8 +71,21 @@ python test.py
 python test.py --visualize
 ```
 ## Results
+### Quantitative
+On the common action split of ExPI dataset, we achieve the following results:
+|       |   5   |   10  |   15  |   25  |
+|   -   |   -   |   -   |   -   |   -   |
+| MPJPE |   40  |  87.1 | 130.1 | 201.3 |
+| AME   |   25  |  53   |  76   | 110   |
+
+On the unseen action split of ExPI dataset, we achieve the following results:
+|       |   10  |   15  |   20  |
+|   -   |   -   |   -   |   -   |
+| MPJPE | 110.4 | 161.7 | 205.3 |
+| AME   |   65  |  93   | 114   |
+
+### Qualitative
 ![results](assets/poses-viz.png)
 
-## TODO 
-- Remove clutter.
-- Add typing.
+## Acknowledgements
+We build upon [MultiMotion](https://github.com/GUO-W/MultiMotion).

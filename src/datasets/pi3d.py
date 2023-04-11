@@ -13,14 +13,14 @@ import torch
 from torch.utils.data import Dataset
 
 from src.datasets import data_utils_pi3d
-from src.utils.config import config
+from config import config
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class Datasets(Dataset):
-    def __init__(self, opt, actions=None, is_train=True):
+    def __init__(self, opt, is_train=True):
         self.path_to_data = opt.data_dir + opt.pi3d_anno_dir
         self.is_train = is_train
         if is_train:  # train

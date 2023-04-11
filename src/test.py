@@ -8,7 +8,7 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader
 
-from src.utils.config import config
+from config import config
 from datasets import pi3d as datasets
 from src.model import Model
 from src.utils.rigid_align import rigid_align_torch
@@ -184,11 +184,13 @@ def test(
     Returns:
         Tuple[List, List]: MPJPE and AME.
     """
-    # Splits
-    # * Common
-    results_keys = ["#4", "#9", "#14", "#24"]
-    # * Unseen
-    # results_keys = ["#9", "#14", "#19"]
+    # Metric splits
+    if config.protocol in ["pro1"] + [str(x) for x in range(7)]:
+        # common and single splits
+        results_keys = ["#4", "#9", "#14", "#24"]
+    elif config.protocol == "pro3":
+        # unseen
+        results_keys = ["#9", "#14", "#19"]
 
     # MPJPE/JME and AME
     m_p3d_pi3d = np.zeros([config.motion.pi3d_target_length_eval])
@@ -272,7 +274,7 @@ if __name__ == "__main__":
         "1/toss-out",
         "1/cartwheel",
     ]
-    eval_dataset = datasets.Datasets(config, actions[0], is_train=False)
+    eval_dataset = datasets.Datasets(opt=config, is_train=False)
     print(">>> Test dataset length: {:d}".format(eval_dataset.__len__()))
     shuffle = False
     sampler = None
@@ -291,5 +293,5 @@ if __name__ == "__main__":
         config, model, dataloader, device, dct_m, idct_m, visualize=args.visualize
     )
 
-    print("Average MPJPE on all common actions: ", mpjpe)
-    print("Average AME on all common actions: ", ame)
+    print("Average MPJPE: ", mpjpe)
+    print("Average AME: ", ame)

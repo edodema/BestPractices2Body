@@ -6,13 +6,12 @@ Contact : wen.guo@inria.fr
 GPL license.
 """
 from typing import Optional
+import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.animation import FFMpegWriter
 from tqdm import tqdm
-from scipy.spatial.transform import Rotation as R
-import numpy as np
-
 import torch
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -21,15 +20,13 @@ plt.rcParams["animation.ffmpeg_path"] = "/usr/bin/ffmpeg"
 
 
 class ExPI3D(object):
-    def __init__(self, fig):
-        # ExPI
+    def __init__(self, fig: matplotlib.figure.Figure):
         self.I = np.array([0, 0, 0, 3, 4, 6, 3, 5, 7, 3, 10, 12, 14, 3, 11, 13, 15])
         self.J = np.array([1, 2, 3, 4, 6, 8, 5, 7, 9, 10, 12, 14, 16, 11, 13, 15, 17])
         self.LR = np.array(
             [1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1], dtype=bool
         )
         self.ax = fig.add_subplot(projection="3d")
-        # self.ax = plt.gca(projection="3d")
         self.ax.cla()
         self.ax.set_xlabel("x")
         self.ax.set_ylabel("y")
@@ -76,9 +73,6 @@ class ExPI3D(object):
                 x = np.array([vals[self.I[i], 0], vals[self.J[i], 0]])
                 y = np.array([vals[self.I[i], 1], vals[self.J[i], 1]])
                 z = np.array([vals[self.I[i], 2], vals[self.J[i], 2]])
-                # self.ax.plot(
-                #     x, y, z, lw=2, c="lightcoral" if j == 0 else "cornflowerblue"
-                # )
                 self.ax.plot(
                     x,
                     y,
@@ -99,7 +93,6 @@ class ExPI3D(object):
                         x = np.array([vals2[self.I[i], 0], vals2[self.J[i], 0]])
                         y = np.array([vals2[self.I[i], 1], vals2[self.J[i], 1]])
                         z = np.array([vals2[self.I[i], 2], vals2[self.J[i], 2]])
-                        # self.ax.plot(x, y, z, lw=2, c="darkred" if j == 0 else "darkblue")
                         self.ax.plot(
                             x,
                             y,

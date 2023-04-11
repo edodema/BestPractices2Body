@@ -37,6 +37,7 @@ C.link_log_file = C.log_dir + "/log_last.log"
 C.val_log_file = C.log_dir + "/val_" + exp_time + ".log"
 C.link_val_log_file = C.log_dir + "/val_last.log"
 
+# Dataset path
 C.data_dir = "./dataset/"
 
 

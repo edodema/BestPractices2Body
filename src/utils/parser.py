@@ -20,12 +20,6 @@ class Parser:
             help="Path to the model file.",
         )
         self.parser.add_argument(
-            "--data",
-            type=str,
-            default="data",
-            help="Path to the data directory.",
-        )
-        self.parser.add_argument(
             "--output",
             type=str,
             default="output",

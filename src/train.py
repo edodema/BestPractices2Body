@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 import wandb
 
 from datasets import pi3d as datasets
-from src.utils.config import config
+from config import config
 from src.model import Model
 from src.utils.logger import get_logger, print_and_log_info
 from src.utils.pyt_utils import link_file, ensure_dir
@@ -164,7 +164,6 @@ if __name__ == "__main__":
 
     # Dataset
     config.motion.pi3d_target_length = config.motion.pi3d_target_length_train
-    config.data_dir = args.data
     # Training
     dataset = datasets.Datasets(opt=config, is_train=True)
     print(">>> Training dataset length: {:d}".format(dataset.__len__()))

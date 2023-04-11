@@ -14,9 +14,6 @@
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
             },
-            "args": [
-                "--data=/media/hdd/datasets_common/",
-            ]
         },
         {
             "name": "test",
@@ -28,9 +25,6 @@
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
             },
-            "args": [
-                "--data=/media/hdd/datasets_common/",
-            ]
         },
         {
             "name": "test_viz",
@@ -43,7 +37,6 @@
                 "PYTHONPATH": "${workspaceFolder}"
             },
             "args": [
-                "--data=/media/hdd/datasets_common/",
                 "--visualize",
             ]
         },
