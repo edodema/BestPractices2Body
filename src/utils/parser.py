@@ -1,5 +1,7 @@
 # Create a class parser for the arguments.
 import argparse
+
+
 class Parser:
     def __init__(self):
         self.parser = argparse.ArgumentParser(
@@ -71,51 +73,47 @@ class Parser:
         )
 
         # Test options
-        self.parser.add_argument("--model-pth", 
-            type=str, 
-            default='log/snapshot', 
-            help="=encoder path"
+        self.parser.add_argument(
+            "--model-pth", type=str, default="log/snapshot", help="encoder path"
         )
-        self.parser.add_argument("--iter", 
-            type=str, 
-            default='40000', 
-            help="=iteration number"
+        self.parser.add_argument(
+            "--iter", type=str, default="40000", help="=iteration number"
         )
-        self.parser.add_argument("--wandb_mode", 
-            type=str, 
-            default="disabled", 
-            help="=wandb status, online or disabled"
-        )
+        self.parser.add_argument("--visualize", action="store_true", help="visualize predictions")
 
-        # Training options
-        self.parser.add_argument("--exp-name", 
-            type=str, 
-            default=None, 
-            help="=exp name"
-        )
-        self.parser.add_argument("--seed", 
-            type=int, 
-            default=888, help="=seed"
-        )
-        self.parser.add_argument("--weight", 
-            type=float, 
-            default=1.0, 
-            help="=loss weight"
-        )
-
-        self.parser.add_argument("--run_name",
-            type=str, 
-            default=None,   
-            help="insert_run_name",
-            required=True
-        )
-        self.parser.add_argument("--model_name",
+        # Wandb
+        self.parser.add_argument(
+            "--wandb_mode",
             type=str,
-            default=None,
-            help="expi, squeeze",
-            required=True
+            default="disabled",
+            help="=wandb status, online or disabled",
         )
-
+        self.parser.add_argument(
+            "--wandb_project",
+            type=str,
+            default="multi_body",
+            help="=wandb project name",
+        )
+        self.parser.add_argument(
+            "--wandb_entity",
+            type=str,
+            default="pinlab-sapienza",
+            help="=wandb entity name",
+        )
+        self.parser.add_argument(
+            "--wandb_group", type=str, default=None, help="=wandb group name"
+        )
+        self.parser.add_argument("--wandb_tags", nargs="+", help="=wandb tags")
+   
+        # Training options
+        self.parser.add_argument(
+            "--run_name", type=str, default="temp", help="=run name"
+        )
+        self.parser.add_argument("--exp-name", type=str, default=None, help="=exp name")
+        self.parser.add_argument("--seed", type=int, default=888, help="=seed")
+        self.parser.add_argument(
+            "--weight", type=float, default=1.0, help="=loss weight"
+        )
 
     def parse(self):
         return self.parser.parse_args()
@@ -123,8 +121,7 @@ class Parser:
 
 # main
 if __name__ == "__main__":
-
-# print parser
+    # print parser
     parser = Parser()
     args = parser.parse()
     print(args)

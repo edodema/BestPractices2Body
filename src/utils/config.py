@@ -4,6 +4,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import os
 import os.path as osp
 import sys
 import time
@@ -17,7 +18,8 @@ cfg = C
 
 
 """please config ROOT_dir and user when u first using"""
-C.abs_dir = osp.dirname(osp.realpath(__file__))
+C.abs_dir = os.getcwd()
+# C.abs_dir = osp.dirname(osp.realpath(__file__))
 C.this_dir = C.abs_dir.split(osp.sep)[-1]
 # C.repo_name = "unet"
 C.repo_name = C.this_dir

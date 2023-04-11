@@ -10,19 +10,15 @@ MIT license.
 import torch
 from torch.utils.data import Dataset
 import numpy as np
-from lib.datasets import data_utils_pi3d
-from config import config
+from src.datasets import data_utils_pi3d
+from src.utils.config import config
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-path = config.data_dir
-
-
 
 class Datasets(Dataset):
     def __init__(self, opt, actions=None, is_train=True):
-
-        self.path_to_data = path+opt.pi3d_anno_dir
+        self.path_to_data = opt.data_dir + opt.pi3d_anno_dir
         self.is_train = is_train
         if is_train:  # train
             self.in_n = opt.motion.pi3d_input_length

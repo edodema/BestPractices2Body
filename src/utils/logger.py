@@ -1,5 +1,5 @@
 import logging
-from utils.pyt_utils import ensure_dir
+from .pyt_utils import ensure_dir
 
 def print_and_log_info(logger, string):
     logger.info(string)
