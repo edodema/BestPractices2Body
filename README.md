@@ -88,4 +88,4 @@ On the unseen action split of ExPI dataset, we achieve the following results:
 ![results](assets/poses-viz.png)
 
 ## Acknowledgements
-We build upon [MultiMotion](https://github.com/GUO-W/MultiMotion).
+We build upon [siMLPe](https://github.com/dulucas/siMLPe) and take some code from [MultiMotion](https://github.com/GUO-W/MultiMotion).
