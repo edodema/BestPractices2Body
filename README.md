@@ -6,7 +6,7 @@
     <a href="https://black.readthedocs.io/en/stable/"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 </p>
 
-The official PyTorch implementation of the **5th IEEE/CVF CVPR Precognition Workshop** paper [**Best Practices for 2-Body Pose Forecasting**]().
+The official PyTorch implementation of the **5th IEEE/CVF CVPR Precognition Workshop** paper [**Best Practices for 2-Body Pose Forecasting**](https://arxiv.org/abs/2304.05758).
 
 Visit our [**webpage**](https://www.pinlab.org/bestpractices2body) for more details.
 
@@ -89,6 +89,3 @@ On the unseen action split of ExPI dataset, we achieve the following results:
 
 ## Acknowledgements
 We build upon [siMLPe](https://github.com/dulucas/siMLPe) and take some code from [MultiMotion](https://github.com/GUO-W/MultiMotion).
-
-## TODO
-- Add paper link.
