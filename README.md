@@ -1,3 +1,5 @@
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/best-practices-for-2-body-pose-forecasting/multi-person-pose-forecasting-on-expi-common)](https://paperswithcode.com/sota/multi-person-pose-forecasting-on-expi-common?p=best-practices-for-2-body-pose-forecasting)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/best-practices-for-2-body-pose-forecasting/multi-person-pose-forecasting-on-expi-unseen)](https://paperswithcode.com/sota/multi-person-pose-forecasting-on-expi-unseen?p=best-practices-for-2-body-pose-forecasting)
 # Best practices for 2-Body Pose Forecasting
 
 <p align="center">
