@@ -1,6 +1,7 @@
+# Best practices for 2-Body Pose Forecasting
+
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/best-practices-for-2-body-pose-forecasting/multi-person-pose-forecasting-on-expi-common)](https://paperswithcode.com/sota/multi-person-pose-forecasting-on-expi-common?p=best-practices-for-2-body-pose-forecasting)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/best-practices-for-2-body-pose-forecasting/multi-person-pose-forecasting-on-expi-unseen)](https://paperswithcode.com/sota/multi-person-pose-forecasting-on-expi-unseen?p=best-practices-for-2-body-pose-forecasting)
-# Best practices for 2-Body Pose Forecasting
 
 <p align="center">
     <a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/-PyTorch-red?logo=pytorch&labelColor=gray"></a>
