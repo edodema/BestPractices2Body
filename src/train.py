@@ -190,7 +190,7 @@ if __name__ == "__main__":
         "1/toss-out",
         "1/cartwheel",
     ]
-    eval_dataset = datasets.Datasets(config, actions, is_train=False)
+    eval_dataset = datasets.Datasets(opt=config, is_train=False)
     print(">>> Validation dataset length: {:d}".format(eval_dataset.__len__()))
     shuffle = False
     sampler = None

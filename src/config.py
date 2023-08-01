@@ -79,10 +79,10 @@ C.unet_inpalightpa = True
 
 #  Model Config
 ## Network
-C.pre_dct = False
-C.post_dct = False
+# C.pre_dct = False
+# C.post_dct = False
 ## Motion Network mlp
-dim_ = 108
+# dim_ = 108
 
 # Train Config
 C.batch_size = 2
