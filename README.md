@@ -9,7 +9,7 @@
     <a href="https://black.readthedocs.io/en/stable/"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 </p>
 
-The official PyTorch implementation of the **5th IEEE/CVF CVPR Precognition Workshop** paper [**Best Practices for 2-Body Pose Forecasting**](https://arxiv.org/abs/2304.05758).
+The official PyTorch implementation of the **5th IEEE/CVF CVPR Precognition Workshop** paper [**Best Practices for 2-Body Pose Forecasting**]([https://arxiv.org/abs/2304.05758](https://openaccess.thecvf.com/content/CVPR2023W/Precognition/html/Rahman_Best_Practices_for_2-Body_Pose_Forecasting_CVPRW_2023_paper.html)).
 
 Visit our [**webpage**](https://www.pinlab.org/bestpractices2body) for more details.
 
@@ -89,6 +89,19 @@ On the unseen action split of ExPI dataset, we achieve the following results:
 
 ### Qualitative
 ![results](assets/poses-viz.png)
+
+## Citation
+```
+@InProceedings{Rahman_2023_CVPR,
+    author    = {Rahman, Muhammad Rameez Ur and Scofano, Luca and De Matteis, Edoardo and Flaborea, Alessandro and Sampieri, Alessio and Galasso, Fabio},
+    title     = {Best Practices for 2-Body Pose Forecasting},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) Workshops},
+    month     = {June},
+    year      = {2023},
+    pages     = {3614-3624}
+}
+```
+
 
 ## Acknowledgements
 We build upon [siMLPe](https://github.com/dulucas/siMLPe) and take some code from [MultiMotion](https://github.com/GUO-W/MultiMotion).
