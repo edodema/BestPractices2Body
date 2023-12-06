@@ -9,7 +9,7 @@
     <a href="https://black.readthedocs.io/en/stable/"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 </p>
 
-The official PyTorch implementation of the **5th IEEE/CVF CVPR Precognition Workshop** paper [**Best Practices for 2-Body Pose Forecasting**]([https://arxiv.org/abs/2304.05758](https://openaccess.thecvf.com/content/CVPR2023W/Precognition/html/Rahman_Best_Practices_for_2-Body_Pose_Forecasting_CVPRW_2023_paper.html)).
+The official PyTorch implementation of the **5th IEEE/CVF CVPR Precognition Workshop** paper [**Best Practices for 2-Body Pose Forecasting**](https://openaccess.thecvf.com/content/CVPR2023W/Precognition/html/Rahman_Best_Practices_for_2-Body_Pose_Forecasting_CVPRW_2023_paper.html).
 
 Visit our [**webpage**](https://www.pinlab.org/bestpractices2body) for more details.
 
